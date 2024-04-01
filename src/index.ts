@@ -2,16 +2,26 @@ import runApp from "./app.js";
 import { Options } from "./types/index.js";
 import figlet from "figlet";
 import { Command } from "commander";
-import { logger } from "./utils/index.js";
+import chalk from "chalk";
 
-logger.info(figlet.textSync("React Utility Belt"));
+"React Migration Tool".split(" ").forEach((word) => {
+  const r = Math.floor(Math.random() * 256);
+  const g = Math.floor(Math.random() * 256);
+  const b = Math.floor(Math.random() * 256);
+
+  const color = chalk.rgb(r, g, b);
+
+  console.log(color.bold(figlet.textSync(word)));
+});
 
 const program = new Command();
 
 program
   .version("1.0.0")
-  .description("A set of tools for a React codebase")
-  .option("-m, --migrate [value]", "Migrate the codebase")
+  .description(
+    "A comprehensive CLI tool for seamless migrations in React projects.",
+  )
+  .option("-m, --migrate [value]", "Migration type")
   .option("-p, --path <value>", "Path to codebase")
   .parse(process.argv);
 

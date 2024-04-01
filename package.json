@@ -1,8 +1,8 @@
 {
-  "name": "react-utility-belt",
+  "name": "react-migration-tool",
   "type": "module",
   "version": "1.0.0",
-  "description": "A CLI tool to handle common React project migrations",
+  "description": "A comprehensive CLI tool for seamless migrations in React projects.",
   "main": "dist/index.js",
   "scripts": {
     "start": "npx tsc && node dist/index.js",
