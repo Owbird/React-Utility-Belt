@@ -1,7 +1,7 @@
 import { select } from "@inquirer/prompts";
 import { Options } from "../types/index.js";
-import { CRAToVite } from "./migrate.js";
 import { logger } from "../utils/index.js";
+import { CRAToVite } from "./migrate.js";
 
 const supportedMigrations = ["cra-to-vite"] as const;
 
@@ -9,7 +9,7 @@ type SupportedMigration = (typeof supportedMigrations)[number];
 
 export async function handleMigration(
   option: Options["migrate"],
-  path: Options["path"],
+  path: Options["path"]
 ) {
   const hasMigrationType = typeof option === "string";
 
@@ -19,13 +19,13 @@ export async function handleMigration(
     choice = await select({
       message: "Select migration type",
       choices: supportedMigrations.map((type) => ({
-        value: type,
-      })),
+        value: type
+      }))
     });
   }
 
   const isSupportedMigration = supportedMigrations.includes(
-    option?.toString().toLowerCase() as SupportedMigration,
+    option?.toString().toLowerCase() as SupportedMigration
   );
 
   if (!isSupportedMigration && hasMigrationType) {
@@ -34,8 +34,8 @@ export async function handleMigration(
     choice = await select({
       message: "Select migration type",
       choices: supportedMigrations.map((type) => ({
-        value: type,
-      })),
+        value: type
+      }))
     });
   }
 

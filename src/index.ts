@@ -1,8 +1,8 @@
+import chalk from "chalk";
+import { Command } from "commander";
+import figlet from "figlet";
 import runApp from "./app.js";
 import { Options } from "./types/index.js";
-import figlet from "figlet";
-import { Command } from "commander";
-import chalk from "chalk";
 
 "React Migration Tool".split(" ").forEach((word) => {
   const r = Math.floor(Math.random() * 256);
@@ -19,7 +19,7 @@ const program = new Command();
 program
   .version("1.0.0")
   .description(
-    "A comprehensive CLI tool for seamless migrations in React projects.",
+    "A comprehensive CLI tool for seamless migrations in React projects."
   )
   .option("-m, --migrate [value]", "Migration type")
   .option("-p, --path <value>", "Path to codebase")
