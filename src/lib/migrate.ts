@@ -13,6 +13,7 @@ import { logger, runCMD } from "../utils/index.js";
 export async function CRAToVite(path: Options["path"]) {
   const fullPath = resolve(path);
 
+  const isTsProj = existsSync(join(fullPath, "tsconfig.json"));
   const project = basename(fullPath);
 
   logger.info(`[!] Migrating ${project} to Vite`);
@@ -34,7 +35,13 @@ export async function CRAToVite(path: Options["path"]) {
 
   await runCMD({
     cwd: fullPath,
-    args: ["install", "vite", "@vitejs/plugin-react"]
+    args: [
+      "install",
+      "vite",
+      "@vitejs/plugin-react",
+      isTsProj ? "vite-tsconfig-paths" : "",
+      "--legacy-peer-deps"
+    ]
   });
 
   spinner.succeed("Installed vite");
@@ -46,13 +53,15 @@ export async function CRAToVite(path: Options["path"]) {
   try {
     const jsFiles = ["index.js", "App.js"];
 
-    for (let file of jsFiles) {
-      const filePath = join(fullPath, "src", file);
+    if (!isTsProj) {
+      for (let file of jsFiles) {
+        const filePath = join(fullPath, "src", file);
 
-      if (existsSync(filePath)) {
-        copyFileSync(filePath, filePath.replace(".js", ".jsx"));
+        if (existsSync(filePath)) {
+          copyFileSync(filePath, filePath.replace(".js", ".jsx"));
 
-        unlinkSync(filePath);
+          unlinkSync(filePath);
+        }
       }
     }
 
@@ -64,7 +73,7 @@ export async function CRAToVite(path: Options["path"]) {
 
     data = `${splitData[0]}
 			<div id="root"></div>
-		  <script type="module" src="/src/index.jsx"></script>
+		  <script type="module" src="/src/index.${isTsProj ? "ts" : "js"}x"></script>
 		  ${splitData[1]}
 		`;
 
@@ -96,6 +105,13 @@ export default defineConfig(() => {
 
   try {
     writeFileSync(join(fullPath, "vite.config.js"), viteConfig);
+
+    if (isTsProj) {
+      writeFileSync(
+        join(fullPath, "vite-env.d.ts"),
+        `/// <reference types="vite/client" />`
+      );
+    }
 
     spinner.succeed("Written Vite config");
     spinner.stop();
@@ -131,6 +147,35 @@ export default defineConfig(() => {
     if (err instanceof Error) {
       spinner.fail(err.message);
       spinner.stop();
+    }
+  }
+
+  if (isTsProj) {
+    spinner.text = "Updating tsconfig.json";
+    spinner.start();
+
+    try {
+      const data = readFileSync(join(fullPath, "tsconfig.json"), "utf8");
+
+      const jsonData = JSON.parse(data);
+
+      jsonData["compilerOptions"]["types"] = [
+        ...jsonData["compilerOptions"]["types"],
+        "vite/client"
+      ];
+
+      writeFileSync(
+        join(fullPath, "tsconfig.json"),
+        JSON.stringify(jsonData, null, 4)
+      );
+
+      spinner.succeed("Updated tsconfig.json");
+      spinner.stop();
+    } catch (err) {
+      if (err instanceof Error) {
+        spinner.fail(err.message);
+        spinner.stop();
+      }
     }
   }
 }
