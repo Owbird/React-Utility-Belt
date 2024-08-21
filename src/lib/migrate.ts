@@ -8,10 +8,12 @@ import {
 import ora from "ora";
 import { basename, join, resolve } from "path";
 import { Options } from "../types/index.js";
-import { logger, runCMD } from "../utils/index.js";
+import { ProjectValidator, logger, runCMD } from "../utils/index.js";
 
 export async function CRAToVite(path: Options["path"]) {
   const fullPath = resolve(path);
+
+  ProjectValidator.isCRAProject(fullPath);
 
   const isTsProj = existsSync(join(fullPath, "tsconfig.json"));
   const project = basename(fullPath);
@@ -39,7 +41,7 @@ export async function CRAToVite(path: Options["path"]) {
       "add",
       "vite",
       "@vitejs/plugin-react",
-      isTsProj ? "vite-tsconfig-paths" : "",
+      isTsProj ? "vite-tsconfig-paths" : ""
     ]
   });
 
