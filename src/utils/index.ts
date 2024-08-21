@@ -12,8 +12,14 @@ export const logger = {
   error: (text: string) => console.log(chalk.red(text))
 };
 
-export async function runCMD({ cmd = "npm", args, cwd }: runCMDArgs) {
+export async function runCMD({ cmd = "pnpm", args, cwd }: runCMDArgs) {
   await new Promise<void>((resolve, reject) => {
+    if (cmd === "pnpm") {
+      cmd = "npx";
+
+      args = ["--yes", "pnpm", ...args];
+    }
+
     const child = spawn(cmd, args, {
       cwd
     });

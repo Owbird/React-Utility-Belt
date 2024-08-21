@@ -24,7 +24,7 @@ export async function CRAToVite(path: Options["path"]) {
 
   await runCMD({
     cwd: fullPath,
-    args: ["uninstall", "react-scripts"]
+    args: ["remove", "react-scripts"]
   });
 
   spinner.succeed("Uninstalled react-scripts");
@@ -36,11 +36,10 @@ export async function CRAToVite(path: Options["path"]) {
   await runCMD({
     cwd: fullPath,
     args: [
-      "install",
+      "add",
       "vite",
       "@vitejs/plugin-react",
       isTsProj ? "vite-tsconfig-paths" : "",
-      "--legacy-peer-deps"
     ]
   });
 
