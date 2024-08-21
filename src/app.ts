@@ -7,7 +7,5 @@ export default function runApp(options: Options) {
     return logger.error("A path is required");
   }
 
-  if (options.migrate) {
-    handleMigration(options.migrate, options.path);
-  }
+  handleMigration(options.migrate, options.path);
 }
