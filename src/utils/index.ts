@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import { spawn } from "child_process";
-import { existsSync, readFileSync } from "fs";
+import { existsSync, readFileSync, readdirSync } from "fs";
 import { join } from "path";
 
 interface runCMDArgs {
@@ -34,7 +34,7 @@ export async function runCMD({ cmd = "pnpm", args, cwd }: runCMDArgs) {
 }
 
 export class ProjectValidator {
-  private static exists(path: string) {
+  public static exists(path: string) {
     if (!existsSync(path)) {
       logger.error(`[!] Path "${path}" does not exist`);
 
@@ -66,7 +66,7 @@ export class ProjectValidator {
     if (!craExists) {
       logger.error(`[!] Path "${path}" is not a CRA project`);
 
-      process.exit(1)
+      process.exit(1);
     }
   }
 }
