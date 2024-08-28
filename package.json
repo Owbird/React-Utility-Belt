@@ -1,5 +1,5 @@
 {
-  "name": "react-migration-tool",
+  "name": "react-utility-belt",
   "type": "module",
   "version": "1.0.0",
   "description": "A comprehensive CLI tool for seamless migrations in React projects.",

@@ -4,7 +4,7 @@ import figlet from "figlet";
 import runApp from "./app.js";
 import { Options } from "./types/index.js";
 
-"React Migration Tool".split(" ").forEach((word) => {
+"React Utility Belt".split(" ").forEach((word) => {
   const r = Math.floor(Math.random() * 256);
   const g = Math.floor(Math.random() * 256);
   const b = Math.floor(Math.random() * 256);
@@ -18,9 +18,7 @@ const program = new Command();
 
 program
   .version("1.0.0")
-  .description(
-    "A comprehensive CLI tool for seamless migrations in React projects."
-  )
+  .description("A set of utilities to easily handle react projects")
   .option("-m, --migrate [value]", "Migration type")
   .option("-p, --path <value>", "Path to codebase")
   .parse(process.argv);
