@@ -1,4 +1,4 @@
-export interface Options {
-  migrate?: boolean | string;
+interface MigrationOptions {
+  type?: boolean | string;
   path: string;
 }

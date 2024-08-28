@@ -1,19 +1,31 @@
 import { select } from "@inquirer/prompts";
-import { Options } from "../types/index.js";
 import { logger } from "../utils/index.js";
 import { CRAToVite } from "./migrate.js";
+import { Command } from "commander";
 
 const supportedMigrations = ["cra-to-vite"] as const;
 
 type SupportedMigration = (typeof supportedMigrations)[number];
 
-export async function handleMigration(
-  option: Options["migrate"],
-  path: Options["path"]
-) {
-  const hasMigrationType = typeof option === "string";
+export function generateMigrateCmd() {
+  return new Command("migrate")
+    .description("Migrate project")
+    .requiredOption("-p, --path <VALUE>", "Path to codebase")
+    .option("-t, --type <VALUE>", "Type of migration")
+    .showHelpAfterError()
+    .action((args) => {
+      const options = args as MigrationOptions;
 
-  let choice = option;
+      handleMigration(options);
+    });
+}
+
+export async function handleMigration(options: MigrationOptions) {
+  const { type, path } = options;
+
+  const hasMigrationType = typeof type === "string";
+
+  let choice = type;
 
   if (!hasMigrationType) {
     choice = await select({
@@ -25,11 +37,11 @@ export async function handleMigration(
   }
 
   const isSupportedMigration = supportedMigrations.includes(
-    option?.toString().toLowerCase() as SupportedMigration
+    type?.toString().toLowerCase() as SupportedMigration
   );
 
   if (!isSupportedMigration && hasMigrationType) {
-    logger.error(`"${option}" is not supported yet\n`);
+    logger.error(`"${type}" is not supported yet\n`);
 
     choice = await select({
       message: "Select migration type",

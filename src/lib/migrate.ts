@@ -7,10 +7,9 @@ import {
 } from "fs";
 import ora from "ora";
 import { basename, join, resolve } from "path";
-import { Options } from "../types/index.js";
 import { ProjectValidator, logger, runCMD } from "../utils/index.js";
 
-export async function CRAToVite(path: Options["path"]) {
+export async function CRAToVite(path: MigrationOptions["path"]) {
   const fullPath = resolve(path);
 
   ProjectValidator.isCRAProject(fullPath);
