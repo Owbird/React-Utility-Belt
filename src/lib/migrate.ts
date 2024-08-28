@@ -136,7 +136,7 @@ export default defineConfig(() => {
     const jsonData = JSON.parse(data);
 
     jsonData["scripts"] = {
-      start: "vite",
+      dev: "vite",
       build: "vite build",
       serve: "vite preview"
     };
