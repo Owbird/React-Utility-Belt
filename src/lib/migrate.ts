@@ -94,13 +94,17 @@ export async function CRAToVite(path: Options["path"]) {
   spinner.text = "Writting Vite config";
   spinner.start();
 
+  const hasTailwindCSS = existsSync(join(fullPath, "tailwind.config.js"));
+
   const viteConfig = `
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+${hasTailwindCSS ? "import tailwindcss from 'tailwindcss';" : ""}
 
 export default defineConfig(() => {
   return {
     plugins: [react()],
+    ${hasTailwindCSS ? "css: { postcss: { plugins: [tailwindcss()] } }," : ""}
   };
 });`;
 
