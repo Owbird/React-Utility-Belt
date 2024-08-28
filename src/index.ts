@@ -1,7 +1,7 @@
 import chalk from "chalk";
 import { Command } from "commander";
 import figlet from "figlet";
-import { generateMigrateCmd } from "./lib/index.js";
+import { generateMigrateCmd } from "./lib/migrate.js";
 
 "React Utility Belt".split(" ").forEach((word) => {
   const r = Math.floor(Math.random() * 256);
