@@ -1,8 +1,8 @@
-import { select } from "@inquirer/prompts";
+import { input, select } from "@inquirer/prompts";
 import { Command } from "commander";
 import { readFileSync, writeFileSync } from "fs";
 import ora from "ora";
-import { basename, join } from "path";
+import { join } from "path";
 import { logger, runCMD } from "../utils/index.js";
 
 const supportedProjects = ["react"] as const;
@@ -76,7 +76,10 @@ async function createReactProject(options: CreateOptions) {
   if (args.length > 3) {
     projectName = args[3];
   } else {
-    projectName = basename(cwd);
+    projectName = await input({
+      required: true,
+      message: "Enter project name"
+    });
   }
 
   logger.info(`[+] Creating new project "${projectName}"`);
@@ -198,14 +201,16 @@ export default defineConfig(() => {
     spinner.start();
 
     try {
-      const indexCss = readFileSync(join(fullPath, "src/index.css"), "utf8"); 
+      const indexCss = readFileSync(join(fullPath, "src/index.css"), "utf8");
 
-      writeFileSync(join(fullPath, "src/index.css"), `
+      writeFileSync(
+        join(fullPath, "src/index.css"),
+        `
       @tailwind base;
 @tailwind components;
 @tailwind utilities;
-${indexCss}`);
-
+${indexCss}`
+      );
 
       spinner.succeed("Updated index.css");
       spinner.stop();
