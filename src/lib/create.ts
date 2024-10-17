@@ -2,7 +2,7 @@ import { input, select } from "@inquirer/prompts";
 import { Command } from "commander";
 import ora from "ora";
 import { join } from "path";
-import { addTailwindCss, logger, runCMD } from "../utils/index.js";
+import { addClerk, addTailwindCss, logger, runCMD } from "../utils/index.js";
 
 const supportedProjects = ["react"] as const;
 
@@ -15,6 +15,7 @@ export function generateCreateCmd() {
     .option("-t, --type <VALUE>", "Type of project")
     .option("-tcss, --tailwindcss", "Add Tailwind CSS")
     .option("-ts, --typescript", "Add Typescript")
+    .option("-ck, --clerk", "Add Clerk")
     .showHelpAfterError()
     .action((args) => {
       const options = args as CreateOptions;
@@ -58,7 +59,8 @@ async function handleCreate(options: CreateOptions) {
     case "react":
       createReactProject({
         typescript: options.typescript,
-        tailwindcss: options.tailwindcss
+        tailwindcss: options.tailwindcss,
+        clerk: options.clerk
       });
       break;
     default:
@@ -67,7 +69,7 @@ async function handleCreate(options: CreateOptions) {
 }
 
 async function createReactProject(options: CreateOptionsArgs) {
-  const { tailwindcss, typescript } = options;
+  const { tailwindcss, typescript, clerk } = options;
 
   const cwd = process.cwd();
 
@@ -110,6 +112,10 @@ async function createReactProject(options: CreateOptionsArgs) {
 
   if (tailwindcss) {
     await addTailwindCss({ spinner, fullPath, typescript });
+  }
+
+  if (clerk) {
+    await addClerk({ spinner, fullPath });
   }
 
   spinner.succeed("Installed dependencies");

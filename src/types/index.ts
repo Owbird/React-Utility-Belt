@@ -10,4 +10,5 @@ type CreateOptions = {
 interface CreateOptionsArgs {
   tailwindcss?: boolean;
   typescript?: boolean;
+  clerk?: boolean;
 }

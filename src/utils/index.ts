@@ -72,7 +72,7 @@ export class ProjectValidator {
   }
 }
 
-type AddTailwindCssParams = {
+type AddArgParams = {
   typescript: boolean | undefined;
   fullPath: string;
   spinner: Ora;
@@ -81,7 +81,7 @@ export const addTailwindCss = async ({
   typescript,
   fullPath,
   spinner
-}: AddTailwindCssParams) => {
+}: AddArgParams) => {
   await runCMD({
     args: ["add", "-D", "tailwindcss", "postcss", "autoprefixer"],
     cwd: fullPath
@@ -190,4 +190,52 @@ ${indexCss}`
 
   spinner.succeed("Tailwind configured");
   spinner.stop();
+};
+
+export const addClerk = async ({
+  fullPath,
+  spinner
+}: Omit<AddArgParams, "typescript">) => {
+  spinner.text = "Installing clerk dependencies";
+  spinner.start();
+
+  await runCMD({
+    args: ["add", "@clerk/clerk-react"],
+    cwd: fullPath
+  });
+
+  spinner.succeed("Installed clerk dependencies");
+  spinner.stop();
+
+  try {
+    writeFileSync(
+      join(fullPath, "src/main.tsx"),
+      `
+ import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App.tsx'
+import './index.css'
+import { ClerkProvider } from '@clerk/clerk-react'
+
+// Import your publishable key
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+
+if (!PUBLISHABLE_KEY) {
+  throw new Error('Missing Publishable Key')
+}
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
+      <App />
+    </ClerkProvider>
+  </React.StrictMode>,
+)`
+    );
+  } catch (err) {
+    if (err instanceof Error) {
+      spinner.fail(err.message);
+      spinner.stop();
+    }
+  }
 };
