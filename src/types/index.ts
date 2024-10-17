@@ -3,8 +3,11 @@ interface MigrationOptions {
   path: string;
 }
 
-interface CreateOptions {
-  type?: boolean | string;
+type CreateOptions = {
+  type?: string;
+} & CreateOptionsArgs;
+
+interface CreateOptionsArgs {
   tailwindcss?: boolean;
   typescript?: boolean;
 }

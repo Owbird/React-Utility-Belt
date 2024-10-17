@@ -1,6 +1,7 @@
 import chalk from "chalk";
 import { spawn } from "child_process";
-import { existsSync, readFileSync, readdirSync } from "fs";
+import { existsSync, readFileSync, writeFileSync } from "fs";
+import { Ora } from "ora";
 import { join } from "path";
 
 interface runCMDArgs {
@@ -15,7 +16,7 @@ export const logger = {
 };
 
 export async function runCMD({ cmd = "pnpm", args, cwd }: runCMDArgs) {
-  await new Promise<void>((resolve, reject) => {
+  await new Promise<void>((resolve, _) => {
     if (cmd === "pnpm") {
       cmd = "npx";
 
@@ -70,3 +71,123 @@ export class ProjectValidator {
     }
   }
 }
+
+type AddTailwindCssParams = {
+  typescript: boolean | undefined;
+  fullPath: string;
+  spinner: Ora;
+};
+export const addTailwindCss = async ({
+  typescript,
+  fullPath,
+  spinner
+}: AddTailwindCssParams) => {
+  await runCMD({
+    args: ["add", "-D", "tailwindcss", "postcss", "autoprefixer"],
+    cwd: fullPath
+  });
+
+  spinner.succeed("Installed dependencies");
+  spinner.stop();
+
+  spinner.text = "Initing tailwind";
+  spinner.start();
+
+  await runCMD({
+    cmd: "npx",
+    args: ["tailwindcss", "init", "-p"],
+    cwd: fullPath
+  });
+
+  spinner.succeed("Tailwind config generated");
+  spinner.stop();
+
+  const tailwindConfig = `
+         /** @type {import('tailwindcss').Config} */
+export default {
+content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+`;
+
+  spinner.text = "Updating tailwind config";
+  spinner.start();
+
+  try {
+    writeFileSync(join(fullPath, "tailwind.config.js"), tailwindConfig);
+
+    spinner.succeed("Updated tailwind config");
+    spinner.stop();
+  } catch (err) {
+    if (err instanceof Error) {
+      spinner.fail(err.message);
+      spinner.stop();
+    }
+  }
+
+  const viteConfig = `
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import tailwindcss from 'tailwindcss';
+
+export default defineConfig(() => {
+  return {
+    plugins: [react()],
+    css: { postcss: { plugins: [tailwindcss()] } },
+  };
+});`;
+
+  spinner.text = "Updating vite config";
+  spinner.start();
+
+  try {
+    writeFileSync(
+      join(fullPath, `vite.config.${typescript ? "ts" : "js"}`),
+      viteConfig
+    );
+
+    spinner.succeed("Updated Vite config");
+    spinner.stop();
+  } catch (err) {
+    if (err instanceof Error) {
+      spinner.fail(err.message);
+      spinner.stop();
+    }
+  }
+
+  spinner.succeed("Tailwind configured");
+  spinner.stop();
+
+  spinner.text = "Updating index.css";
+  spinner.start();
+
+  try {
+    const indexCss = readFileSync(join(fullPath, "src/index.css"), "utf8");
+
+    writeFileSync(
+      join(fullPath, "src/index.css"),
+      `
+      @tailwind base;
+@tailwind components;
+@tailwind utilities;
+${indexCss}`
+    );
+
+    spinner.succeed("Updated index.css");
+    spinner.stop();
+  } catch (err) {
+    if (err instanceof Error) {
+      spinner.fail(err.message);
+      spinner.stop();
+    }
+  }
+
+  spinner.succeed("Tailwind configured");
+  spinner.stop();
+};

@@ -1,9 +1,8 @@
 import { input, select } from "@inquirer/prompts";
 import { Command } from "commander";
-import { readFileSync, writeFileSync } from "fs";
 import ora from "ora";
 import { join } from "path";
-import { logger, runCMD } from "../utils/index.js";
+import { addTailwindCss, logger, runCMD } from "../utils/index.js";
 
 const supportedProjects = ["react"] as const;
 
@@ -57,30 +56,25 @@ async function handleCreate(options: CreateOptions) {
 
   switch (choice as SupportedProject) {
     case "react":
-      createReactProject(options);
+      createReactProject({
+        typescript: options.typescript,
+        tailwindcss: options.tailwindcss
+      });
       break;
     default:
       break;
   }
 }
 
-async function createReactProject(options: CreateOptions) {
+async function createReactProject(options: CreateOptionsArgs) {
   const { tailwindcss, typescript } = options;
 
   const cwd = process.cwd();
 
-  const args = process.argv;
-
-  let projectName;
-
-  if (args.length > 3) {
-    projectName = args[3];
-  } else {
-    projectName = await input({
-      required: true,
-      message: "Enter project name"
-    });
-  }
+  const projectName = await input({
+    required: true,
+    message: "Enter project name"
+  });
 
   logger.info(`[+] Creating new project "${projectName}"`);
 
@@ -114,114 +108,10 @@ async function createReactProject(options: CreateOptions) {
     cwd: fullPath
   });
 
-  await runCMD({
-    args: ["add", "-D", "tailwindcss", "postcss", "autoprefixer"],
-    cwd: fullPath
-  });
+  if (tailwindcss) {
+    await addTailwindCss({ spinner, fullPath, typescript });
+  }
 
   spinner.succeed("Installed dependencies");
   spinner.stop();
-
-  if (tailwindcss) {
-    spinner.text = "Initing tailwind";
-    spinner.start();
-
-    await runCMD({
-      cmd: "npx",
-      args: ["tailwindcss", "init", "-p"],
-      cwd: fullPath
-    });
-
-    spinner.succeed("Tailwind config generated");
-    spinner.stop();
-
-    const tailwindConfig = `
-         /** @type {import('tailwindcss').Config} */
-export default {
-content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-}
-`;
-
-    spinner.text = "Updating tailwind config";
-    spinner.start();
-
-    try {
-      writeFileSync(join(fullPath, "tailwind.config.js"), tailwindConfig);
-
-      spinner.succeed("Updated tailwind config");
-      spinner.stop();
-    } catch (err) {
-      if (err instanceof Error) {
-        spinner.fail(err.message);
-        spinner.stop();
-      }
-    }
-
-    const viteConfig = `
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-${tailwindcss ? "import tailwindcss from 'tailwindcss';" : ""}
-
-export default defineConfig(() => {
-  return {
-    plugins: [react()],
-    ${tailwindcss ? "css: { postcss: { plugins: [tailwindcss()] } }," : ""}
-  };
-});`;
-
-    spinner.text = "Updating vite config";
-    spinner.start();
-
-    try {
-      writeFileSync(
-        join(fullPath, `vite.config.${typescript ? "ts" : "js"}`),
-        viteConfig
-      );
-
-      spinner.succeed("Updated Vite config");
-      spinner.stop();
-    } catch (err) {
-      if (err instanceof Error) {
-        spinner.fail(err.message);
-        spinner.stop();
-      }
-    }
-
-    spinner.succeed("Tailwind configured");
-    spinner.stop();
-
-    spinner.text = "Updating index.css";
-    spinner.start();
-
-    try {
-      const indexCss = readFileSync(join(fullPath, "src/index.css"), "utf8");
-
-      writeFileSync(
-        join(fullPath, "src/index.css"),
-        `
-      @tailwind base;
-@tailwind components;
-@tailwind utilities;
-${indexCss}`
-      );
-
-      spinner.succeed("Updated index.css");
-      spinner.stop();
-    } catch (err) {
-      if (err instanceof Error) {
-        spinner.fail(err.message);
-        spinner.stop();
-      }
-    }
-
-    spinner.succeed("Tailwind configured");
-    spinner.stop();
-  }
 }
