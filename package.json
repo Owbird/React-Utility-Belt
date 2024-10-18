@@ -4,6 +4,9 @@
   "version": "1.0.0",
   "description": "A comprehensive CLI tool for seamless migrations in React projects.",
   "main": "dist/index.js",
+  "bin": {
+    "react-utility-belt": "dist/index.js"
+  },
   "scripts": {
     "start": "npx tsc && node dist/index.js",
     "build": "npx tsc",
