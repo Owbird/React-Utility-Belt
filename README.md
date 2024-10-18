@@ -1,26 +1,25 @@
 # React Utility Belt
 
-[![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
-
-
 React Utility Belt is an awesome CLI tool designed to streamline and simplify common tasks in React development. Whether you're migrating projects or setting up new ones, React Utility Belt has got you covered.
 
 ## Features
 
-- **CRA to Vite Migration**: Easily migrate your Create React App (CRA) projects to Vite for improved performance and developer experience.
+-  Create react projects with extra juice set up already (Typescript, Tailwind, Clerk, etc).
+
+-  Easily migrate your Create React App (CRA) projects to Vite for improved performance and developer experience.
 
 ## Usage
 
 ### Running a utility
 
 ```bash
-react-utility-belt -p <project-directory>
+react-utility-belt --help
 ```
 
-or jump straight
+or for a particular command
 
 ```bash
-react-utility-belt -p <project-directory> -m cra-to-vite
+react-utility-belt [command] --help
 ```
 
 ## Contributing
@@ -37,4 +36,4 @@ If you encounter any issues or have questions, please file an issue on our [GitH
 
 ---
 
-Happy coding with React Utility Belt! 🚀
+Happy coding with React Utility Belt! 🚀 
