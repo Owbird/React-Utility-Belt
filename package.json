@@ -1,9 +1,17 @@
 {
   "name": "react-utility-belt",
   "type": "module",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "A comprehensive CLI tool for seamless migrations in React projects.",
   "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Owbird/React-Utility-Belt"
+  },
+  "keywords": [
+    "cli",
+    "react"
+  ],
   "bin": {
     "react-utility-belt": "dist/index.js"
   },
@@ -13,7 +21,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Owbird",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@inquirer/prompts": "^4.3.1",
     "chalk": "^4.1.2",
