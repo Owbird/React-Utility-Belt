@@ -24,7 +24,8 @@ export async function runCMD({ cmd = "pnpm", args, cwd }: runCMDArgs) {
     }
 
     const child = spawn(cmd, args, {
-      cwd
+      cwd,
+      shell: true
     });
 
     child.stdout.on("data", (chunk) => console.log(chalk.green(chunk)));
